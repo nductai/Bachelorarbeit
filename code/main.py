@@ -53,15 +53,13 @@ for i in range(len(color_files)):
 
         # Loop through detected objects in the color image
         for j, (box, conf, cls) in enumerate(zip(result[0].boxes.xyxy, result[0].boxes.conf, result[0].boxes.cls)):
-            label = result[0].names[int(cls)]  # Get the label of the class
-            print(f"Label: {label}, Box: {box.tolist()}, Confidence: {conf.item()}")
+            label = result[0].names[int(cls)]  # Get the labels
+            if label == "person":
+                print(f"Label: {label}, Box: {box.tolist()}, Confidence: {conf.item()}")
 
-            # Convert box coordinates to integers
-            x1, y1, x2, y2 = map(int, box[:4])
+                # Convert box coordinates to integers
+                x1, y1, x2, y2 = map(int, box[:4])
+                crop_depth_img = depth_img[y1:y2, x1:x2]
 
-            # Crop the corresponding depth image section based on bounding box
-            crop_depth_img = depth_img[y1:y2, x1:x2]
-
-            # Save the cropped depth image with index, detection number, and label
-            crop_path = os.path.join(save_dir, f"{label}_depth_cropped_{i}_{j}.png")
-            cv2.imwrite(crop_path, crop_depth_img)
+                crop_path = os.path.join(save_dir, f"{label}_depth_cropped_{i}_{j}.png") # Save with index and detection number
+                cv2.imwrite(crop_path, crop_depth_img)
