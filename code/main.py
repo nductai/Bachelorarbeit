@@ -2,30 +2,43 @@ import os
 import sys
 from ultralytics import YOLO
 import cv2
+import glob
 
 model = YOLO("yolov8s.pt")
+
+
+def clean_save_directory(directory):
+    files = glob.glob(os.path.join(directory, '*'))
+    for file in files:
+        try:
+            os.remove(file)  # Remove file
+        except Exception as e:
+            print(f"Error removing file {file}: {e}")
+
 
 color_data_path = "Pose-Estimation-ToF/recording-tof-20221024-0918/kinect/color/0/"
 depth_data_path = "Pose-Estimation-ToF/recording-tof-20221024-0918/kinect/depth/0/"
 
 save_dir = "Pose-Estimation-ToF/recording-tof-20221024-0918/cropped/"
 os.makedirs(save_dir, exist_ok=True)
+clean_save_directory(save_dir)
 
 color_files = sorted(os.listdir(color_data_path))
 depth_files = sorted(os.listdir(depth_data_path))
+
+print("Number of files and directories in color_files:", len(color_files))
 
 if len(color_files) != len(depth_files):
     print("Number of files and directories in color_files:", len(color_files))
     print("Number of files and directories in depth_files:", len(depth_files))
     raise ValueError("NUMBER OF FILES ARE NOT THE SAME!")
 
-# for file in files:
+# for file in color_files:
 #     file_path = os.path.join(color_data_path, file)
 #
 #     if file.endswith(('.jpg', '.jpeg', '.png')):
 #         img = cv2.imread(file_path)
-#         result = model(source=file_path, show=False, conf=0.4, save=True, save_crop=True, project=save_dir, name="0",
-#                        exist_ok=True)
+#         result = model(source=file_path, show=False, conf=0.4, save=True, save_crop=True)
 
 # -------------DIFFERENT VERSION OF CROPPING (WITH COORDINATE)------------------
 
@@ -43,23 +56,20 @@ for i in range(len(color_files)):
 
         result = model(source=color_file_path, show=False, conf=0.4)
 
-        # # Loop through detected objects in the color image
-        # for j, det in enumerate(result[0].boxes.xyxy):
-        #     x1, y1, x2, y2 = map(int, det[:4])
-        #     crop_depth_img = depth_img[y1:y2, x1:x2]
-        #
-        #     crop_path = os.path.join(save_dir, f"depth_cropped_{i}_{j}.png")  # Save with index and detection number
-        #     cv2.imwrite(crop_path, crop_depth_img)
-
-        # Loop through detected objects in the color image
+        # loop through detected objects in the color image
         for j, (box, conf, cls) in enumerate(zip(result[0].boxes.xyxy, result[0].boxes.conf, result[0].boxes.cls)):
             label = result[0].names[int(cls)]  # Get the labels
             if label == "person":
                 print(f"Label: {label}, Box: {box.tolist()}, Confidence: {conf.item()}")
 
-                # Convert box coordinates to integers
+                # convert box coordinates to integers
                 x1, y1, x2, y2 = map(int, box[:4])
+                print(f"x1: {x1}, y1: {y1}, x2: {x2}, y2: {y2}")
                 crop_depth_img = depth_img[y1:y2, x1:x2]
 
-                crop_path = os.path.join(save_dir, f"{label}_depth_cropped_{i}_{j}.png") # Save with index and detection number
+                crop_path = os.path.join(save_dir,
+                                         f"{label}_depth_cropped_{i}_{j}.png")  # Save with index and detection number
                 cv2.imwrite(crop_path, crop_depth_img)
+
+cropped_files = sorted(os.listdir(save_dir))
+print("Number of files and directories in cropped_files:", len(cropped_files))
