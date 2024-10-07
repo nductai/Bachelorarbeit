@@ -115,7 +115,7 @@ def save_results_to_json(image_name, keypoints, scores, recording_folder, subfol
 
     # Define the JSON file path
     json_file_name = f"{os.path.splitext(image_name)[0]}_keypoints.json"
-    json_dir = os.path.join(base_dir, recording_folder, 'cropped/keypoints', subfolder)
+    json_dir = os.path.join(base_dir, recording_folder, 'keypoints', subfolder)
     os.makedirs(json_dir, exist_ok=True)
     json_file_path = os.path.join(json_dir, json_file_name)
 
@@ -135,7 +135,7 @@ def save_visualized_image(img_path, batch_results, recording_folder, subfolder, 
     img = imread(img_path, channel_order='rgb')
 
     # Define the output directory and file path for the visualized image
-    vis_dir = os.path.join(base_dir, recording_folder, 'cropped/visualized', subfolder)
+    vis_dir = os.path.join(base_dir, recording_folder, 'visualized', subfolder)
     os.makedirs(vis_dir, exist_ok=True)
     output_image_path = os.path.join(vis_dir, f"{os.path.splitext(img_file)[0]}_visualized.png")
 
