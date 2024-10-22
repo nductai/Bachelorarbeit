@@ -6,7 +6,7 @@ train_cfg = dict(max_epochs=210, val_interval=10)
 # optimizer
 optim_wrapper = dict(optimizer=dict(
     type='Adam',
-    lr=5e-4,
+    lr=5e-4,  # learning rate
 ))
 
 # learning policy
@@ -49,8 +49,8 @@ model = dict(
                 num_modules=1,
                 num_branches=1,
                 block='BOTTLENECK',
-                num_blocks=(4, ),
-                num_channels=(64, )),
+                num_blocks=(4,),
+                num_channels=(64,)),
             stage2=dict(
                 num_modules=1,
                 num_branches=2,
@@ -72,12 +72,12 @@ model = dict(
         init_cfg=dict(
             type='Pretrained',
             checkpoint='https://download.openmmlab.com/mmpose/'
-            'pretrain_models/hrnet_w48-8ef0771d.pth'),
+                       'pretrain_models/hrnet_w48-8ef0771d.pth'),
     ),
     head=dict(
         type='HeatmapHead',
         in_channels=48,
-        out_channels=17,
+        out_channels=17,  # TODO: Update to match number of keypoints (should be 17)
         deconv_out_channels=None,
         loss=dict(type='KeypointMSELoss', use_target_weight=True),
         decoder=codec),
@@ -90,7 +90,7 @@ model = dict(
 # base dataset settings
 dataset_type = 'CocoDataset'
 data_mode = 'topdown'
-data_root = 'data/coco/'
+data_root = 'data/coco/'  # TODO: update to dataset root directory
 
 # pipelines
 train_pipeline = [
@@ -112,7 +112,7 @@ val_pipeline = [
 
 # data loaders
 train_dataloader = dict(
-    batch_size=32,
+    batch_size=32,  # TODO: Adjust based on your dataset size and available GPU memory
     num_workers=2,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=True),
@@ -120,8 +120,8 @@ train_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/person_keypoints_train2017.json',
-        data_prefix=dict(img='train2017/'),
+        ann_file='annotations/person_keypoints_train2017.json',  # TODO: Update with train annotations
+        data_prefix=dict(img='train2017/'),  # TODO: Update with training image directory
         pipeline=train_pipeline,
     ))
 val_dataloader = dict(
@@ -134,10 +134,10 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/person_keypoints_val2017.json',
+        ann_file='annotations/person_keypoints_val2017.json',  # TODO: Update with validation annotations
         bbox_file='data/coco/person_detection_results/'
-        'COCO_val2017_detections_AP_H_56_person.json',
-        data_prefix=dict(img='val2017/'),
+                  'COCO_val2017_detections_AP_H_56_person.json',
+        data_prefix=dict(img='val2017/'),  # TODO: Update with validation image directory
         test_mode=True,
         pipeline=val_pipeline,
     ))
