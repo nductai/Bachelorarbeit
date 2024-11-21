@@ -1,13 +1,15 @@
 _base_ = ['../../../_base_/default_runtime.py']
 
 # runtime
-train_cfg = dict(max_epochs=210, val_interval=10)
+#train_cfg = dict(max_epochs=210, val_interval=10)
+train_cfg = dict(max_epochs=100, val_interval=1)
 
 # optimizer
 optim_wrapper = dict(optimizer=dict(
     type='Adam',
     lr=5e-4,  # learning rate
 ))
+
 
 # learning policy
 param_scheduler = [
@@ -88,9 +90,14 @@ model = dict(
     ))
 
 # base dataset settings
-dataset_type = 'CocoDataset'
+dataset_type = 'TinyCocoDataset'
 data_mode = 'topdown'
-data_root = 'data/coco/'  # TODO: update to dataset root directory
+#data_root = 'D:/TU/7_Semester/Bachelorarbeit/mmpose/configs/body_2d_keypoint/topdown_heatmap/coco/coco_tiny/'  # TODO: update to dataset root directory
+#data_root = 'D:/TU/7_Semester/test/'
+data_root = r'D:\TU\7_Semester\Bachelorarbeit\code\Pose-Estimation-ToF\training'
+
+
+work_dir = r'D:\TU\7_Semester\Bachelorarbeit\mmpose\work_dirs\td-hm_hrnet'
 
 # pipelines
 train_pipeline = [
@@ -120,8 +127,8 @@ train_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/person_keypoints_train2017.json',  # TODO: Update with train annotations
-        data_prefix=dict(img='train2017/'),  # TODO: Update with training image directory
+        ann_file='train.json',  # TODO: Update with train annotations
+        data_prefix=dict(img='images/'),  # TODO: Update with training image directory
         pipeline=train_pipeline,
     ))
 val_dataloader = dict(
@@ -134,10 +141,8 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/person_keypoints_val2017.json',  # TODO: Update with validation annotations
-        bbox_file='data/coco/person_detection_results/'
-                  'COCO_val2017_detections_AP_H_56_person.json',
-        data_prefix=dict(img='val2017/'),  # TODO: Update with validation image directory
+        ann_file='val.json',  # TODO: Update with validation annotations
+        data_prefix=dict(img='images/'),  # TODO: Update with validation image directory
         test_mode=True,
         pipeline=val_pipeline,
     ))
@@ -145,6 +150,8 @@ test_dataloader = val_dataloader
 
 # evaluators
 val_evaluator = dict(
-    type='CocoMetric',
-    ann_file=data_root + 'annotations/person_keypoints_val2017.json')
+    type='PCKAccuracy')
 test_evaluator = val_evaluator
+
+# hooks
+default_hooks = dict(checkpoint=dict(save_best='PCK', rule='greater'))

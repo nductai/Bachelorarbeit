@@ -13,13 +13,6 @@ device = 'cuda'
 
 model = init_model(model_cfg, ckpt, device=device)
 
-coco_keypoint_labels = [
-    "Nose", "Left Eye", "Right Eye", "Left Ear", "Right Ear",
-    "Left Shoulder", "Right Shoulder", "Left Elbow", "Right Elbow",
-    "Left Wrist", "Right Wrist", "Left Hip", "Right Hip",
-    "Left Knee", "Right Knee", "Left Ankle", "Right Ankle"
-]
-
 base_dir = r'D:\TU\7_Semester\Bachelorarbeit\code\Pose-Estimation-ToF'
 
 # Initialize visualizer
@@ -31,8 +24,9 @@ def clean_save_directories():
     for recording_folder in os.listdir(base_dir):
         recording_path = os.path.join(base_dir, recording_folder)
         if os.path.isdir(recording_path):
-            keypoints_dir = os.path.join(recording_path, 'cropped/keypoints')
-            visualized_dir = os.path.join(recording_path, 'cropped/visualized')
+
+            keypoints_dir = os.path.join(recording_path, 'keypoints')
+            visualized_dir = os.path.join(recording_path, 'visualized')
 
             # remove keypoints and visualized directories if they exist
             if os.path.exists(keypoints_dir):
@@ -99,17 +93,15 @@ def save_results_to_json(image_name, keypoints, scores, recording_folder, subfol
     img = imread(img_path)
     image_height, image_width = img.shape[:2]
 
-
     results = {
         'image_file': image_name,
         'image_size': [image_width, image_height],
         'bbox': [],  # [x top left corner, y top right corner, width, height]
-        'keypoints': []
+        'keypoints': []  # Flattened keypoints and visibility will be appended here
     }
 
     batch_results = inference_topdown(model, img_path)
     if batch_results and 'bboxes' in batch_results[0].pred_instances:
-
         x_min, y_min, x_max, y_max = batch_results[0].pred_instances.bboxes[0].tolist()
 
         width = x_max - x_min
@@ -117,10 +109,17 @@ def save_results_to_json(image_name, keypoints, scores, recording_folder, subfol
 
         results['bbox'] = [x_min, y_min, width, height]
 
-    for keypoint in keypoints:
-        results['keypoints'].append(keypoint.tolist())
+    #   visibility:
+    #     0: Not labeled (invisible).
+    #     1: Labeled but not visible (e.g., occluded).
+    #     2: Labeled and visible.
 
-    json_file_name = f"{os.path.splitext(image_name)[0]}_keypoints.json"
+    for i, keypoint in enumerate(keypoints):
+        for j, coord in enumerate(keypoint):
+            visibility = 2 if scores[i][j] > 0.5 else (1 if scores[i][j] > 0 else 0)
+            results['keypoints'].extend([float(coord[0]), float(coord[1]), visibility])
+
+    json_file_name = f"{os.path.splitext(image_name)[0]}.json"
     json_dir = os.path.join(base_dir, recording_folder, 'keypoints', subfolder)
     os.makedirs(json_dir, exist_ok=True)
     json_file_path = os.path.join(json_dir, json_file_name)
@@ -130,6 +129,7 @@ def save_results_to_json(image_name, keypoints, scores, recording_folder, subfol
 
     # print(f"Saved keypoints to {json_file_path}")
 
+
 # save the visualized image with keypoints
 def save_visualized_image(img_path, batch_results, recording_folder, subfolder, img_file):
     results = merge_data_samples(batch_results)
@@ -138,7 +138,7 @@ def save_visualized_image(img_path, batch_results, recording_folder, subfolder, 
 
     vis_dir = os.path.join(base_dir, recording_folder, 'visualized', subfolder)
     os.makedirs(vis_dir, exist_ok=True)
-    output_image_path = os.path.join(vis_dir, f"{os.path.splitext(img_file)[0]}_visualized.png")
+    output_image_path = os.path.join(vis_dir, f"{os.path.splitext(img_file)[0]}.png")
 
     visualizer.add_datasample(
         'result',

@@ -7,6 +7,9 @@ from ultralytics import YOLO
 model = YOLO("yolov8s.pt")
 base_dir = "Pose-Estimation-ToF/"
 
+# Initialize a global counter
+counter = 0
+
 
 def clean_save_directory(directory):
     files = glob.glob(os.path.join(directory, '*'))
@@ -21,6 +24,7 @@ def clean_save_directory(directory):
 
 
 def process_folders(base_dir):
+    global counter
     # loop through each recording folder
     for recording_folder in os.listdir(base_dir):
         recording_path = os.path.join(base_dir, recording_folder)
@@ -71,6 +75,7 @@ def process_color_depth_subfolders(color_data_path, depth_data_path, save_dir_co
 
 
 def process_color_depth_pairs(color_data_path, depth_data_path, save_dir_color, save_dir_depth):
+    global counter
     color_files = sorted(os.listdir(color_data_path))
     depth_files = sorted(os.listdir(depth_data_path))
 
@@ -93,30 +98,28 @@ def process_color_depth_pairs(color_data_path, depth_data_path, save_dir_color, 
             result = model(source=color_file_path, show=False, conf=0.4)
 
             # loop through detected objects in the color image
-            for j, (box, conf, cls) in enumerate(zip(result[0].boxes.xyxy, result[0].boxes.conf, result[0].boxes.cls)):
+            for box, conf, cls in zip(result[0].boxes.xyxy, result[0].boxes.conf, result[0].boxes.cls):
                 label = result[0].names[int(cls)]
                 if label == "person":
-                    # print(f"Label: {label}, Box: {box.tolist()}, Confidence: {conf.item()}")
-
+                    # Extract bounding box coordinates
                     x1, y1, x2, y2 = map(int, box[:4])
-                    # print(f"x1: {x1}, y1: {y1}, x2: {x2}, y2: {y2}")
 
-                    # crop the color and depth images using box coordinates
+                    # Crop the color and depth images using box coordinates
                     crop_color_img = color_img[y1:y2, x1:x2]
                     crop_depth_img = depth_img[y1:y2, x1:x2]
 
-                    # save the cropped color image
-                    crop_color_path = os.path.join(save_dir_color, f"{label}_color_cropped_{i}_{j}.png")
+                    # Generate the zero-padded filename
+                    file_index = f"{counter:06d}"
+                    counter += 1
+
+                    # Save the cropped images with shared naming
+                    crop_color_path = os.path.join(save_dir_color, f"{file_index}.png")
+                    crop_depth_path = os.path.join(save_dir_depth, f"{file_index}.png")
+
+                    # Save the cropped images
                     cv2.imwrite(crop_color_path, crop_color_img)
-
-                    # save the cropped depth image
-                    crop_depth_path = os.path.join(save_dir_depth, f"{label}_depth_cropped_{i}_{j}.png")
                     cv2.imwrite(crop_depth_path, crop_depth_img)
-
-    # cropped_color_files = sorted(os.listdir(save_dir_color))
-    # cropped_depth_files = sorted(os.listdir(save_dir_depth))
-    # print(f"Number of cropped color files saved: {len(cropped_color_files)}")
-    # print(f"Number of cropped depth files saved: {len(cropped_depth_files)}")
 
 
 process_folders(base_dir)
+

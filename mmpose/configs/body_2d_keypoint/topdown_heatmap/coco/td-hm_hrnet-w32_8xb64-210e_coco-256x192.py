@@ -88,9 +88,11 @@ model = dict(
     ))
 
 # base dataset settings
-dataset_type = 'CocoDataset'
+dataset_type = 'TinyCocoDataset'
 data_mode = 'topdown'
-data_root = 'data/coco/'
+data_root = 'D:/TU/7_Semester/Bachelorarbeit/mmpose/configs/body_2d_keypoint/topdown_heatmap/coco/coco_tiny/'  # TODO: update to dataset root directory
+
+work_dir = r'D:\TU\7_Semester\Bachelorarbeit\mmpose\work_dirs\td-hm_hrnet'
 
 # pipelines
 train_pipeline = [
@@ -120,8 +122,8 @@ train_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/person_keypoints_train2017.json',
-        data_prefix=dict(img='train2017/'),
+        ann_file='train.json',  # TODO: Update with train annotations
+        data_prefix=dict(img='images/'),  # TODO: Update with training image directory
         pipeline=train_pipeline,
     ))
 val_dataloader = dict(
@@ -134,10 +136,10 @@ val_dataloader = dict(
         type=dataset_type,
         data_root=data_root,
         data_mode=data_mode,
-        ann_file='annotations/person_keypoints_val2017.json',
+        ann_file='val.json',  # TODO: Update with validation annotations
         bbox_file='data/coco/person_detection_results/'
         'COCO_val2017_detections_AP_H_56_person.json',
-        data_prefix=dict(img='val2017/'),
+        data_prefix=dict(img='images/'),  # TODO: Update with validation image directory
         test_mode=True,
         pipeline=val_pipeline,
     ))

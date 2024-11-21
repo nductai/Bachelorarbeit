@@ -1,0 +1,1 @@
+{"accuracy":0.8346268720912933,"_step":399,"loss":0.0004854918740596544,"step":18465,"_runtime":1.0152449,"validation_PCK":0.27480916030534347,"_timestamp":1.7321916020906072e+09,"validation_step":100,"learning_rate":0.0005000000000000014,"epoch":100,"_wandb":{"runtime":1}}

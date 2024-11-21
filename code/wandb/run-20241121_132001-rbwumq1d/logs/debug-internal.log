@@ -1,0 +1,16 @@
+{"time":"2024-11-21T13:20:01.4902479+01:00","level":"INFO","msg":"using version","core version":"0.18.7"}
+{"time":"2024-11-21T13:20:01.4903595+01:00","level":"INFO","msg":"created symlink","path":"D:\\TU\\7_Semester\\Bachelorarbeit\\code\\wandb\\run-20241121_132001-rbwumq1d\\logs\\debug-core.log"}
+{"time":"2024-11-21T13:20:01.6078661+01:00","level":"INFO","msg":"created new stream","id":"rbwumq1d"}
+{"time":"2024-11-21T13:20:01.6078661+01:00","level":"INFO","msg":"stream: started","id":"rbwumq1d"}
+{"time":"2024-11-21T13:20:01.6078661+01:00","level":"INFO","msg":"writer: Do: started","stream_id":"rbwumq1d"}
+{"time":"2024-11-21T13:20:01.6078661+01:00","level":"INFO","msg":"sender: started","stream_id":"rbwumq1d"}
+{"time":"2024-11-21T13:20:01.608394+01:00","level":"INFO","msg":"handler: started","stream_id":"rbwumq1d"}
+{"time":"2024-11-21T13:20:01.9615544+01:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2024-11-21T13:20:02.5043558+01:00","level":"INFO","msg":"stream: closing","id":"rbwumq1d"}
+{"time":"2024-11-21T13:20:02.5048619+01:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2024-11-21T13:20:02.5053843+01:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2024-11-21T13:20:03.2876808+01:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2024-11-21T13:20:03.5875417+01:00","level":"INFO","msg":"handler: closed","stream_id":"rbwumq1d"}
+{"time":"2024-11-21T13:20:03.5875417+01:00","level":"INFO","msg":"writer: Close: closed","stream_id":"rbwumq1d"}
+{"time":"2024-11-21T13:20:03.5875417+01:00","level":"INFO","msg":"sender: closed","stream_id":"rbwumq1d"}
+{"time":"2024-11-21T13:20:03.5880632+01:00","level":"INFO","msg":"stream: closed","id":"rbwumq1d"}

@@ -1,0 +1,43 @@
+{
+  "os":  "Windows-10-10.0.22631-SP0",
+  "python":  "3.10.0",
+  "startedAt":  "2024-11-21T11:59:28.628589Z",
+  "program":  "D:\\TU\\7_Semester\\Bachelorarbeit\\code\\plot_wandb.py",
+  "codePath":  "code\\plot_wandb.py",
+  "git":  {
+    "remote":  "git@github.com:nductai/Bachelorarbeit.git",
+    "commit":  "f71d56ac4986503b8d886f35fdc5d8873f50fe50"
+  },
+  "email":  "duc.nguyen@student.tugraz.at",
+  "root":  "D:\\TU\\7_Semester\\Bachelorarbeit\\code",
+  "host":  "TAI-PC",
+  "username":  "ductai",
+  "executable":  "C:\\Users\\ductai\\AppData\\Local\\Programs\\Python\\Python310\\python.exe",
+  "codePathLocal":  "plot_wandb.py",
+  "cpu_count":  6,
+  "cpu_count_logical":  12,
+  "gpu":  "NVIDIA GeForce RTX 3060 Ti",
+  "gpu_count":  1,
+  "disk":  {
+    "/":  {
+      "total":  "702544867328",
+      "used":  "419343540224"
+    }
+  },
+  "memory":  {
+    "total":  "17028063232"
+  },
+  "cpu":  {
+    "count":  6,
+    "countLogical":  12
+  },
+  "gpu_nvidia":  [
+    {
+      "name":  "NVIDIA GeForce RTX 3060 Ti",
+      "memoryTotal":  "8589934592",
+      "cudaCores":  4864,
+      "architecture":  "Ampere"
+    }
+  ],
+  "cudaVersion":  "12.6"
+}
