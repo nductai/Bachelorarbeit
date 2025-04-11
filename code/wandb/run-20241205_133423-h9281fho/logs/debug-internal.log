@@ -1,0 +1,16 @@
+{"time":"2024-12-05T13:34:23.1133384+01:00","level":"INFO","msg":"using version","core version":"0.18.7"}
+{"time":"2024-12-05T13:34:23.1134128+01:00","level":"INFO","msg":"created symlink","path":"D:\\TU\\7_Semester\\Bachelorarbeit\\code\\wandb\\run-20241205_133423-h9281fho\\logs\\debug-core.log"}
+{"time":"2024-12-05T13:34:23.2244745+01:00","level":"INFO","msg":"created new stream","id":"h9281fho"}
+{"time":"2024-12-05T13:34:23.2244745+01:00","level":"INFO","msg":"stream: started","id":"h9281fho"}
+{"time":"2024-12-05T13:34:23.2244745+01:00","level":"INFO","msg":"handler: started","stream_id":"h9281fho"}
+{"time":"2024-12-05T13:34:23.2244745+01:00","level":"INFO","msg":"sender: started","stream_id":"h9281fho"}
+{"time":"2024-12-05T13:34:23.2244745+01:00","level":"INFO","msg":"writer: Do: started","stream_id":"h9281fho"}
+{"time":"2024-12-05T13:34:23.5103059+01:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2024-12-05T13:34:24.0353133+01:00","level":"INFO","msg":"stream: closing","id":"h9281fho"}
+{"time":"2024-12-05T13:34:24.0353133+01:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2024-12-05T13:34:24.0358269+01:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2024-12-05T13:34:25.2224382+01:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2024-12-05T13:34:25.5252922+01:00","level":"INFO","msg":"handler: closed","stream_id":"h9281fho"}
+{"time":"2024-12-05T13:34:25.5252922+01:00","level":"INFO","msg":"writer: Close: closed","stream_id":"h9281fho"}
+{"time":"2024-12-05T13:34:25.5252922+01:00","level":"INFO","msg":"sender: closed","stream_id":"h9281fho"}
+{"time":"2024-12-05T13:34:25.5252922+01:00","level":"INFO","msg":"stream: closed","id":"h9281fho"}

@@ -8,6 +8,7 @@ from mmengine.config import Config, DictAction
 from mmengine.hooks import Hook
 from mmengine.runner import Runner
 
+from mmpose.datasets.datasets.body.tiny_coco_dataset import TinyCocoDataset
 
 def parse_args():
     parser = argparse.ArgumentParser(

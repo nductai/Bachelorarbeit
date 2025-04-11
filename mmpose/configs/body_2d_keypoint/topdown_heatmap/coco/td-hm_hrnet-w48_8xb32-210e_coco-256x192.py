@@ -2,7 +2,7 @@ _base_ = ['../../../_base_/default_runtime.py']
 
 # runtime
 #train_cfg = dict(max_epochs=210, val_interval=10)
-train_cfg = dict(max_epochs=100, val_interval=1)
+train_cfg = dict(max_epochs=120, val_interval=1)
 
 # optimizer
 optim_wrapper = dict(optimizer=dict(
@@ -92,10 +92,10 @@ model = dict(
 # base dataset settings
 dataset_type = 'TinyCocoDataset'
 data_mode = 'topdown'
-#data_root = 'D:/TU/7_Semester/Bachelorarbeit/mmpose/configs/body_2d_keypoint/topdown_heatmap/coco/coco_tiny/'  # TODO: update to dataset root directory
-#data_root = 'D:/TU/7_Semester/test/'
 data_root = r'D:\TU\7_Semester\Bachelorarbeit\code\Pose-Estimation-ToF\training'
 
+#data_root = 'D:/TU/7_Semester/Bachelorarbeit/mmpose/configs/body_2d_keypoint/topdown_heatmap/coco/coco_tiny/'  # TODO: update to dataset root directory
+#data_root = 'D:/TU/7_Semester/test/'
 
 work_dir = r'D:\TU\7_Semester\Bachelorarbeit\mmpose\work_dirs\td-hm_hrnet'
 
@@ -116,6 +116,12 @@ val_pipeline = [
     dict(type='TopdownAffine', input_size=codec['input_size']),
     dict(type='PackPoseInputs')
 ]
+test_pipeline = [
+    dict(type='LoadImage'),
+    dict(type='GetBBoxCenterScale'),
+    dict(type='TopdownAffine', input_size=codec['input_size']),
+    dict(type='PackPoseInputs')
+]
 
 # data loaders
 train_dataloader = dict(
@@ -131,6 +137,24 @@ train_dataloader = dict(
         data_prefix=dict(img='images/'),  # TODO: Update with training image directory
         pipeline=train_pipeline,
     ))
+
+test_dataloader = dict(
+    batch_size=32,
+    num_workers=2,
+    persistent_workers=True,
+    drop_last=False,
+    sampler=dict(type='DefaultSampler', shuffle=False, round_up=False),
+    dataset=dict(
+        type=dataset_type,
+        data_root=data_root,
+        data_mode=data_mode,
+        ann_file='test.json',
+        data_prefix=dict(img='images/'),  # Testing image directory
+        test_mode=True,
+        pipeline=test_pipeline,
+    )
+)
+
 val_dataloader = dict(
     batch_size=32,
     num_workers=2,
@@ -145,13 +169,23 @@ val_dataloader = dict(
         data_prefix=dict(img='images/'),  # TODO: Update with validation image directory
         test_mode=True,
         pipeline=val_pipeline,
-    ))
-test_dataloader = val_dataloader
+    )
+)
 
 # evaluators
 val_evaluator = dict(
     type='PCKAccuracy')
-test_evaluator = val_evaluator
+
+test_evaluator = dict(
+    type='PCKAccuracy',
+)
 
 # hooks
-default_hooks = dict(checkpoint=dict(save_best='PCK', rule='greater'))
+default_hooks = dict(
+    checkpoint=dict(save_best='PCK', rule='greater'),
+    visualization=dict(
+        type='PoseVisualizationHook',
+        show=False,  # Set to True to show the visualizations interactively
+        out_dir=r'D:\TU\7_Semester\Bachelorarbeit\mmpose\test_results'  # Output directory for visualized images
+    )
+)

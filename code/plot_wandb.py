@@ -3,7 +3,7 @@ import json
 
 wandb.init(project="pose-estimation", name="json-plot")
 
-file_path = r"D:\TU\7_Semester\Bachelorarbeit\mmpose\work_dirs\td-hm_hrnet\20241121_082952\vis_data\20241121_082952.json"
+file_path = r"D:\TU\7_Semester\Bachelorarbeit\mmpose\work_dirs\td-hm_hrnet\20241126_094436\vis_data\20241126_094436.json"
 
 with open(file_path, "r") as file:
     lines = file.readlines()
