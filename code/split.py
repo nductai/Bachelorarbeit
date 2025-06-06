@@ -2,6 +2,8 @@ import os
 import shutil
 import json
 
+#TODO: remove validation_folder and testing_folder
+
 def copy_images(base_script_dir, target_subfolder="Pose-Estimation-ToF", validation_folders=None, testing_folders=None):
 
     if validation_folders is None:

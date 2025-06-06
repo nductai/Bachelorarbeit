@@ -12,10 +12,6 @@ device = 'cuda'
 model_cfg = r'D:\TU\7_Semester\Bachelorarbeit\mmpose\models\td-hm_hrnet-w48_8xb32-210e_coco-256x192.py'
 ckpt = r'D:\TU\7_Semester\Bachelorarbeit\mmpose\models\td-hm_hrnet-w48_8xb32-210e_coco-256x192-0e67c616_20220913.pth'
 
-# ------------------MODEL FOR DEPTH IMAGES------------------
-# model_cfg = r'D:\TU\7_Semester\Bachelorarbeit\mmpose\work_dirs\td-hm_hrnet\td-hm_hrnet-w48_8xb32-210e_coco-256x192.py'
-# ckpt = r'D:\TU\7_Semester\Bachelorarbeit\mmpose\work_dirs\td-hm_hrnet\best_PCK_epoch_99.pth'
-
 model = init_model(model_cfg, ckpt, device=device)
 
 base_dir = r'D:\TU\7_Semester\Bachelorarbeit\code\Pose-Estimation-ToF'
@@ -199,21 +195,5 @@ def save_visualized_image(img_path, batch_results, recording_folder, subfolder, 
     # print(f"Saved visualized keypoints to {output_image_path}")
 
 
-# clean_save_directories()
-# process_folders(base_dir)
-
-
-def process_validation_images(validation_dir):
-    for img_file in sorted(os.listdir(validation_dir)):
-        if img_file.endswith(('.jpg', '.jpeg', '.png')):
-            img_path = os.path.join(validation_dir, img_file)
-            keypoints, scores, batch_results = infer_keypoints(img_path)
-
-            if keypoints is not None and scores is not None:
-                save_results_to_json_validation(img_file, keypoints, scores, 'validation', '')
-                save_visualized_image(img_path, batch_results, 'validation', '', img_file)
-
-
-# Use this function to process images in the validation directory
-validation_dir = r'D:\TU\7_Semester\Bachelorarbeit\code\Pose-Estimation-ToF\validation'
-process_validation_images(validation_dir)
+clean_save_directories()
+process_folders(base_dir)

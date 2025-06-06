@@ -29,7 +29,14 @@ param_scheduler = [
 auto_scale_lr = dict(base_batch_size=512)
 
 # hooks
-default_hooks = dict(checkpoint=dict(save_best='coco/AP', rule='greater'))
+default_hooks = dict(
+    checkpoint=dict(save_best='PCK', rule='greater'),
+    visualization=dict(
+        type='PoseVisualizationHook',
+        show=False,  # Set to True to show the visualizations interactively
+        out_dir=r'D:\TU\7_Semester\Bachelorarbeit\mmpose\test_results'  # Output directory for visualized images
+    )
+)
 
 # codec settings
 codec = dict(
@@ -180,12 +187,3 @@ test_evaluator = dict(
     type='PCKAccuracy',
 )
 
-# hooks
-default_hooks = dict(
-    checkpoint=dict(save_best='PCK', rule='greater'),
-    visualization=dict(
-        type='PoseVisualizationHook',
-        show=False,  # Set to True to show the visualizations interactively
-        out_dir=r'D:\TU\7_Semester\Bachelorarbeit\mmpose\test_results'  # Output directory for visualized images
-    )
-)
