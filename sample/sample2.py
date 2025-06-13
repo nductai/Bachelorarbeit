@@ -13,7 +13,7 @@ ckpt = r'D:\TU\7_Semester\Bachelorarbeit\mmpose\work_dirs\td-hm_hrnet\best_PCK_e
 model = init_model(model_cfg, ckpt, device=device)
 
 # ------------------DIRECTORIES------------------
-image_dir = r'D:\TU\7_Semester\Bachelorarbeit\sample\removed'
+image_dir = r'D:\TU\7_Semester\Bachelorarbeit\code\Pose-Estimation-ToF\testing\remove\005914'
 keypoints_dir = os.path.join(image_dir, 'keypoints')
 visualized_dir = os.path.join(image_dir, 'visualized')
 os.makedirs(keypoints_dir, exist_ok=True)
@@ -87,7 +87,9 @@ def save_visualized_image(img_path, batch_results):
     )
     print(f"Saved visualization: {output_path}")
 
-# ------------------PROCESS ALL IMAGES IN DIRECTORY------------------
+# ------------------PROCESS IMAGES ONLY (SKIP FOLDERS)------------------
 for file in sorted(os.listdir(image_dir)):
-    if file.lower().endswith(('.jpg', '.jpeg', '.png')):
-        process_image(os.path.join(image_dir, file))
+    file_path = os.path.join(image_dir, file)
+    if os.path.isfile(file_path) and file.lower().endswith(('.jpg', '.jpeg', '.png')):
+        process_image(file_path)
+
