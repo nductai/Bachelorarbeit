@@ -27,7 +27,7 @@ bbox = gt_data["bbox"]
 bbox_size = np.array([[bbox[2] - bbox[0], bbox[3] - bbox[1]]])
 
 # --- COMPUTE PCK SCORES ---
-pck_metric = PCKAccuracy(thr=0.5, norm_item='bbox')
+pck_metric = PCKAccuracy(thr=0.05, norm_item='bbox')
 results = {}
 
 for filename in os.listdir(keypoints_dir):
@@ -47,7 +47,7 @@ for filename in os.listdir(keypoints_dir):
         }]
 
         result = pck_metric(predictions, groundtruths)
-        results[filename.replace(".json", "")] = result['PCK@0.5']
+        results[filename.replace(".json", "")] = result['PCK@0.05']
 
 # --- UPDATE HEATMAP FILES ---
 for filename in os.listdir(heatmap_dir):
@@ -62,7 +62,7 @@ for filename in os.listdir(heatmap_dir):
             pck_score = results[json_basename]
             heatmap_replaced = np.where(heatmap == 1, pck_score, heatmap)
             np.save(heatmap_path, heatmap_replaced)
-            print(f"Updated {filename} with PCK@0.5 = {pck_score:.4f}")
+            print(f"Updated {filename} with PCK@0.05 = {pck_score:.4f}")
         else:
             print(f"Warning: No PCK score for {json_basename}")
 
@@ -104,7 +104,7 @@ print(f"Saved averaged map to {avg_map_path}")
 # --- SAVE AVERAGE MAP AS IMAGE ---
 plt.figure(figsize=(6, 6))
 plt.imshow(avg_map, cmap='RdYlBu_r', interpolation='nearest')
-plt.colorbar(label='Average PCK@0.5')
+plt.colorbar(label='Average PCK@0.05')
 plt.title('Average PCK Heatmap')
 plt.tight_layout()
 

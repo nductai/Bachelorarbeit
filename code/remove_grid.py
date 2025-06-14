@@ -6,7 +6,7 @@ import os
 input_dir = r'D:\TU\7_Semester\Bachelorarbeit\code\Pose-Estimation-ToF\testing'
 output_base_dir = os.path.join(input_dir, 'remove')  # Base output folder
 
-grid_size = 10            # Size of one "big pixel"
+grid_size = 5            # Size of one "big pixel"
 removal_prob = 0.1        # Probability to remove a cell
 num_iterations = 1000      # Number of modified images per original
 
