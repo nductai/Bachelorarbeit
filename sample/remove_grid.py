@@ -11,7 +11,16 @@ removal_prob = 0.1        # Probability to remove a cell
 num_iterations = 1000      # Number of modified images per original
 
 # List all image files in the folder
-image_files = [f for f in os.listdir(input_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+# image_files = [f for f in os.listdir(input_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+
+target_file = '005914.png'
+image_path = os.path.join(input_dir, target_file)
+
+if not os.path.exists(image_path):
+    print(f"{target_file} does not exist in the directory.")
+    exit()
+
+image_files = [target_file]
 
 for image_file in image_files:
     image_path = os.path.join(input_dir, image_file)
