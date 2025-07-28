@@ -216,10 +216,6 @@ model = init_model(model_cfg, ckpt, device=device)
 
 # ------------------DIRECTORIES------------------
 image_dir = r'D:\TU\7_Semester\Bachelorarbeit\code\Pose-Estimation-ToF\testing\remove\005914'
-keypoints_dir = os.path.join(image_dir, 'keypoints')
-visualized_dir = os.path.join(image_dir, 'visualized')
-os.makedirs(keypoints_dir, exist_ok=True)
-os.makedirs(visualized_dir, exist_ok=True)
 
 # ------------------VISUALIZER------------------
 visualizer = VISUALIZERS.build(model.cfg.visualizer)
@@ -227,7 +223,7 @@ visualizer.set_dataset_meta(model.dataset_meta)
 
 # ------------------HELPERS------------------
 
-def process_image(img_path):
+def process_image(img_path, save_kp_dir, save_vis_dir):
     try:
         batch_results = inference_topdown(model, img_path)
         if not batch_results:
@@ -238,13 +234,13 @@ def process_image(img_path):
         keypoints = result.pred_instances.keypoints
         scores = result.pred_instances.keypoint_scores
 
-        save_results_to_json(img_path, keypoints, scores)
-        save_visualized_image(img_path, batch_results)
+        save_results_to_json(img_path, keypoints, scores, save_kp_dir)
+        save_visualized_image(img_path, batch_results, save_vis_dir)
 
     except Exception as e:
         print(f"Error processing {img_path}: {e}")
 
-def save_results_to_json(img_path, keypoints, scores):
+def save_results_to_json(img_path, keypoints, scores, output_dir):
     img = imread(img_path)
     h, w = img.shape[:2]
 
@@ -266,18 +262,20 @@ def save_results_to_json(img_path, keypoints, scores):
             vis = 2 if scores[i][j] > 0.5 else (1 if scores[i][j] > 0.1 else 0)
             result['keypoints'].extend([float(coord[0]), float(coord[1]), vis])
 
+    os.makedirs(output_dir, exist_ok=True)
     json_name = os.path.splitext(filename)[0] + '.json'
-    json_path = os.path.join(keypoints_dir, json_name)
+    json_path = os.path.join(output_dir, json_name)
     with open(json_path, 'w') as f:
         json.dump(result, f, indent=4)
-    print(f"Saved: {json_path}")
+    print(f"Saved keypoints JSON: {json_path}")
 
-def save_visualized_image(img_path, batch_results):
+def save_visualized_image(img_path, batch_results, output_dir):
     merged_result = merge_data_samples(batch_results)
     img = imread(img_path, channel_order='rgb')
 
+    os.makedirs(output_dir, exist_ok=True)
     filename = os.path.basename(img_path)
-    output_path = os.path.join(visualized_dir, os.path.splitext(filename)[0] + '.png')
+    output_path = os.path.join(output_dir, os.path.splitext(filename)[0] + '.png')
 
     visualizer.add_datasample(
         'result',
@@ -289,8 +287,19 @@ def save_visualized_image(img_path, batch_results):
     )
     print(f"Saved visualization: {output_path}")
 
-# ------------------PROCESS IMAGES ONLY (SKIP FOLDERS)------------------
-for file in sorted(os.listdir(image_dir)):
-    file_path = os.path.join(image_dir, file)
-    if os.path.isfile(file_path) and file.lower().endswith(('.jpg', '.jpeg', '.png')):
-        process_image(file_path)
+# ------------------PROCESS IMAGES RECURSIVELY------------------
+
+for root, dirs, files in os.walk(image_dir):
+    if any(skip in root for skip in ['keypoints', 'visualized']):
+        continue
+
+    if 'threshold_' in root:
+        keypoints_subdir = os.path.join(root, 'keypoints')
+        visualized_subdir = os.path.join(root, 'visualized')
+
+        for file in sorted(files):
+            if file.lower().endswith(('.jpg', '.jpeg', '.png')):
+                file_path = os.path.join(root, file)
+                print(f"Processing: {file_path}")
+                process_image(file_path, keypoints_subdir, visualized_subdir)
+
