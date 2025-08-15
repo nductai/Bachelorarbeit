@@ -68,7 +68,7 @@ for threshold in threshold_values:
                 top_left_x = col * grid_size
                 top_left_y = row * grid_size
                 image[top_left_y:top_left_y + grid_size, top_left_x:top_left_x + grid_size] = [0, 0, 0]
-                mask[row, col] = 1
+                mask[row, col] = 1 # set to 1 if that pixel got removed
                 removed_grids.append((row, col))
 
         # save outputs
