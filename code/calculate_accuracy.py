@@ -2,6 +2,7 @@ import os
 import json
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
 
 # --- CONFIG ---
 base_dir = r"D:\TU\7_Semester\Bachelorarbeit\code\Pose-Estimation-ToF\testing\remove\005914"
@@ -9,15 +10,23 @@ gt_keypoints_dir = os.path.join(base_dir, "threshold_1_0", "images", "keypoints"
 
 r = 20.0
 
+# --- LOGGING SETUP ---
+log_path = os.path.join(base_dir, "debug_log.txt")
+log_file = open(log_path, "w")
+
+def log_print(*args, **kwargs):
+    """Print to terminal and save to log file."""
+    print(*args, **kwargs)
+    print(*args, **kwargs, file=log_file)
+
 # --- ACCURACY ALGORITHM ---
 def compute_accuracy(l2_error, r):
     if np.isnan(l2_error):
-        return float('nan')
+        return 0.0
     elif l2_error >= r:
         return 0.0
     else:
         return 1.0 - (l2_error / r)
-
 
 def extract_keypoints(kps_flat):
     keypoints = np.array(kps_flat).reshape(-1, 3)
@@ -25,14 +34,15 @@ def extract_keypoints(kps_flat):
     mask = keypoints[:, 2] > 0
     return coords, mask
 
+def compute_l2_distance(pred_coords, gt_coords, gt_mask, pred_mask, keypoint_idx=None):
+    visible = np.where(gt_mask & pred_mask)[0]
 
-def compute_l2_distance(pred_coords, gt_coords, gt_mask, keypoint_idx=None):
-    visible = np.where(gt_mask)[0]
     if len(visible) == 0:
-        print("Warning: No visible keypoints in ground truth!")
         return float('nan')
 
     if keypoint_idx is not None:
+        if not (gt_mask[keypoint_idx] and pred_mask[keypoint_idx]):
+            return float('nan')  # skip if either invisible
         diff = pred_coords[keypoint_idx] - gt_coords[keypoint_idx]
         dist = np.linalg.norm(diff)
         return dist
@@ -41,19 +51,18 @@ def compute_l2_distance(pred_coords, gt_coords, gt_mask, keypoint_idx=None):
         dists = np.linalg.norm(diffs, axis=1)
         return dists
 
-
 # --- LOAD GROUND TRUTH ---
 gt_json_files = [f for f in os.listdir(gt_keypoints_dir) if f.endswith(".json")]
 assert len(gt_json_files) > 0, f"No JSON files found in {gt_keypoints_dir}"
 original_file = os.path.join(gt_keypoints_dir, gt_json_files[0])
-print(f"Using ground truth JSON file: {gt_json_files[0]}")
+log_print(f"Using ground truth JSON file: {gt_json_files[0]}")
 
 with open(original_file) as f:
     gt_data = json.load(f)
 
 gt_coords, gt_mask = extract_keypoints(gt_data["keypoints"])
-print(f"Ground truth visible keypoints count: {np.sum(gt_mask)}")
-print(f"Ground truth keypoints visible score: {np.array(gt_data['keypoints'])[2::3]}")
+log_print(f"Ground truth visible keypoints count: {np.sum(gt_mask)}")
+log_print(f"Ground truth keypoints visible score: {np.array(gt_data['keypoints'])[2::3]}")
 
 # --- LOOP THROUGH ALL THRESHOLD FOLDERS ---
 all_results = {}
@@ -67,8 +76,6 @@ for subdir in os.listdir(base_dir):
     mask_dir = os.path.join(base_dir, subdir, "masks")
     if not os.path.isdir(pred_keypoints_dir):
         continue
-
-    print(f"\n=== Evaluating folder: {subdir} ===")
 
     # LOOP THROUGH ALL KEYPOINTS
     for keypoint_idx in range(17):
@@ -85,14 +92,22 @@ for subdir in os.listdir(base_dir):
                 pred_path = os.path.join(pred_keypoints_dir, filename)
                 with open(pred_path) as f:
                     pred_data = json.load(f)
-                pred_coords, _ = extract_keypoints(pred_data["keypoints"])
+                pred_coords, pred_mask = extract_keypoints(pred_data["keypoints"])
 
                 iteration_number = filename.rsplit('_', 1)[-1].replace(".json", "")
-                print(f"Processing {filename} (iteration {iteration_number}) | keypoint {keypoint_idx}")
+                #log_print(f"\nProcessing {filename} (iteration {iteration_number}) | keypoint {keypoint_idx}")
 
                 # Calculate error for this keypoint
-                l2_error = compute_l2_distance(pred_coords, gt_coords, gt_mask, keypoint_idx=keypoint_idx)
+                l2_error = compute_l2_distance(pred_coords, gt_coords, gt_mask, pred_mask, keypoint_idx=keypoint_idx)
                 accuracy = compute_accuracy(l2_error, r)
+
+                if not np.isnan(l2_error):
+                    log_print(f"  GT coords[{keypoint_idx}] = {gt_coords[keypoint_idx]} (mask={gt_mask[keypoint_idx]})")
+                    log_print(f"  Pred coords[{keypoint_idx}] = {pred_coords[keypoint_idx]} (mask={pred_mask[keypoint_idx]})")
+                    log_print(f"  L2 distance = {l2_error:.4f}")
+                    log_print(f"  Accuracy (r={r}) = {accuracy:.4f}")
+                else:
+                    log_print(f"  Skipped keypoint {keypoint_idx} (not visible in GT or prediction)")
 
                 # Replace heatmap values with accuracy
                 heatmap_path = os.path.join(mask_dir, f"heatmap_{iteration_number}.npy")
@@ -101,16 +116,19 @@ for subdir in os.listdir(base_dir):
                     heatmap_accuracy = np.where(heatmap == 1, accuracy, heatmap)
                     save_path = os.path.join(keypoint_subdir, f"heatmap_accuracy_{iteration_number}.npy")
                     np.save(save_path, heatmap_accuracy)
+                    log_print(f"  Updated heatmap: {heatmap_path} -> {save_path}")
                 else:
-                    print(f"Warning: No heatmap found for iteration {iteration_number}")
+                    log_print(f"  Warning: No heatmap found for iteration {iteration_number}")
 
                 if not np.isnan(l2_error):
                     total_l2_error += l2_error
                     file_count += 1
 
         # --- Sum all heatmap_accuracy_xxxx.npy files for this keypoint ---
-        heatmap_acc_files = [f for f in os.listdir(keypoint_subdir)
-                             if f.startswith("heatmap_accuracy_") and f.endswith(".npy")]
+        heatmap_acc_files = [
+            f for f in os.listdir(keypoint_subdir)
+            if f.startswith("heatmap_accuracy_") and f.endswith(".npy") and "final" not in f]
+
         summed_heatmap = None
         for f in heatmap_acc_files:
             arr = np.load(os.path.join(keypoint_subdir, f))
@@ -122,7 +140,7 @@ for subdir in os.listdir(base_dir):
 
         # --- Sum all count_xxxx.npy files ---
         count_files = [f for f in os.listdir(mask_dir)
-                       if f.startswith("count_") and f.endswith(".npy")]
+                       if f.startswith("count_") and f.endswith(".npy")and "final" not in f]
         summed_count = None
         for f in count_files:
             arr = np.load(os.path.join(mask_dir, f))
@@ -141,7 +159,7 @@ for subdir in os.listdir(base_dir):
 
             # --- Plot final heatmap ---
             plt.figure(figsize=(8, 6))
-            plt.imshow(final_heatmap, cmap='jet', interpolation='nearest')
+            plt.imshow(final_heatmap, cmap='jet_r', interpolation='nearest')
             plt.colorbar(label='Accuracy')
             plt.title(f'Final Heatmap | Keypoint {keypoint_idx} | Threshold {subdir}')
             plt.axis('off')
@@ -150,18 +168,17 @@ for subdir in os.listdir(base_dir):
 
         avg_l2_error = total_l2_error / file_count if file_count > 0 else float('nan')
         all_results[f"{subdir}_kp{keypoint_idx}"] = avg_l2_error
-        print(f"Processed {file_count} files for keypoint {keypoint_idx} in '{subdir}'. "
-              f"Average L2 error = {avg_l2_error}")
+        log_print(f"Processed {file_count} files for keypoint {keypoint_idx} in '{subdir}'. "
+                  f"Average L2 error = {avg_l2_error}")
 
-print("\n=== L2 Error Summary Across All Threshold Folders ===")
+log_print("\n=== L2 Error Summary Across All Threshold Folders ===")
 for folder, error in all_results.items():
-    print(f"{folder}: Average L2 Error = {error}")
+    log_print(f"{folder}: Average L2 Error = {error}")
 
-print("\n=== L2 Error & Accuracy Summary Across All Threshold Folders ===")
+log_print("\n=== L2 Error & Accuracy Summary Across All Threshold Folders ===")
 for folder, error in all_results.items():
     accuracy = compute_accuracy(error, r)
-    print(f"{folder}: Avg L2 = {error} | Accuracy (r={r}) = {accuracy}")
-
+    log_print(f"{folder}: Avg L2 = {error} | Accuracy (r={r}) = {accuracy}")
 
 # --- PLOT ACCURACY VS THRESHOLD FOR ALL 17 KEYPOINTS ---
 def plot_accuracy_vs_threshold_all_kps(results_dict, radius, save_dir):
@@ -184,7 +201,7 @@ def plot_accuracy_vs_threshold_all_kps(results_dict, radius, save_dir):
                     thresholds.append(threshold)
                     accuracies.append(compute_accuracy(error, radius))
                 except Exception as e:
-                    print(f"Skipping {folder}: {e}")
+                    log_print(f"Skipping {folder}: {e}")
 
         if thresholds:
             thresholds, accuracies = zip(*sorted(zip(thresholds, accuracies)))
@@ -203,7 +220,11 @@ def plot_accuracy_vs_threshold_all_kps(results_dict, radius, save_dir):
             plot_save_path = os.path.join(save_dir, f"accuracy_vs_threshold_kp{kp}.png")
             plt.savefig(plot_save_path, dpi=300)
             plt.close()
-            print(f"Saved plot for keypoint {kp} to: {plot_save_path}")
+            log_print(f"Saved plot for keypoint {kp} to: {plot_save_path}")
 
-plot_accuracy_vs_threshold_all_kps(all_results, r, base_dir)
+#plot_accuracy_vs_threshold_all_kps(all_results, r, base_dir)
+
+log_print(f"\n=== Debug log saved to {log_path} ===")
+log_file.close()
+
 
