@@ -198,10 +198,12 @@
 # clean_save_directories()
 # process_folders(base_dir)
 
-# ------------------------ LINES BELOW ARE FOR RUNNING PREDICTION ON GREY SCALE IMAGE (TESTING)------------------
+# ------------------------ LINES BELOW ARE FOR RUNNING PREDICTION ON GREY SCALE IMAGE ------------------
 
 import os
 import json
+from pathlib import Path
+
 from mmcv.image import imread
 from mmpose.apis import inference_topdown, init_model
 from mmpose.registry import VISUALIZERS
@@ -209,20 +211,46 @@ from mmpose.structures import merge_data_samples
 
 device = 'cuda'
 
+# ------------------PATH SETUP------------------
+# prediction.py is located at: Bachelorarbeit/mmpose/prediction.py
+THIS_FILE = Path(__file__).resolve()
+MMPOSE_DIR = THIS_FILE.parent
+REPO_ROOT = MMPOSE_DIR.parent
+
 # ------------------MODEL CONFIGURATION------------------
-model_cfg = r'D:\TU\7_Semester\Bachelorarbeit\mmpose\work_dirs\td-hm_hrnet\td-hm_hrnet-w48_8xb32-210e_coco-256x192.py'
-ckpt = r'D:\TU\7_Semester\Bachelorarbeit\mmpose\work_dirs\td-hm_hrnet\best_PCK_epoch_86.pth'
-model = init_model(model_cfg, ckpt, device=device)
+model_cfg = (
+    REPO_ROOT
+    / "mmpose"
+    / "work_dirs"
+    / "td-hm_hrnet"
+    / "td-hm_hrnet-w48_8xb32-210e_coco-256x192.py"
+)
+
+ckpt = (
+    REPO_ROOT
+    / "mmpose"
+    / "work_dirs"
+    / "td-hm_hrnet"
+    / "best_PCK_epoch_86.pth"
+)
+
+model = init_model(str(model_cfg), str(ckpt), device=device)
 
 # ------------------DIRECTORIES------------------
-image_dir = r'D:\TU\7_Semester\Bachelorarbeit\code\Pose-Estimation-ToF\testing\remove\005914'
+image_dir = (
+    REPO_ROOT
+    / "code"
+    / "Pose-Estimation-ToF"
+    / "testing"
+    / "remove"
+    / "005914"
+)
 
 # ------------------VISUALIZER------------------
 visualizer = VISUALIZERS.build(model.cfg.visualizer)
 visualizer.set_dataset_meta(model.dataset_meta)
 
 # ------------------HELPERS------------------
-
 def process_image(img_path, save_kp_dir, save_vis_dir):
     try:
         batch_results = inference_topdown(model, img_path)
@@ -288,7 +316,6 @@ def save_visualized_image(img_path, batch_results, output_dir):
     print(f"Saved visualization: {output_path}")
 
 # ------------------PROCESS IMAGES RECURSIVELY------------------
-
 for root, dirs, files in os.walk(image_dir):
     if any(skip in root for skip in ['keypoints', 'visualized']):
         continue
@@ -302,4 +329,5 @@ for root, dirs, files in os.walk(image_dir):
                 file_path = os.path.join(root, file)
                 print(f"Processing: {file_path}")
                 process_image(file_path, keypoints_subdir, visualized_subdir)
+
 
