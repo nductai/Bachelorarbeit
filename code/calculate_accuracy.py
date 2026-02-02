@@ -3,10 +3,14 @@ import json
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
+from pathlib import Path
 
 # --- CONFIG ---
-base_dir = r"D:\TU\7_Semester\Bachelorarbeit\code\Pose-Estimation-ToF\testing\remove\005914"
-gt_keypoints_dir = os.path.join(base_dir, "threshold_1_0", "images", "keypoints")
+THIS_FILE = Path(__file__).resolve()
+REPO_ROOT = THIS_FILE.parent.parent  # -> Bachelorarbeit
+
+base_dir = REPO_ROOT / "code" / "Pose-Estimation-ToF" / "testing" / "remove" / "005914"
+gt_keypoints_dir = base_dir / "threshold_1_0" / "images" / "keypoints"
 
 r = 20.0
 
@@ -15,7 +19,6 @@ log_path = os.path.join(base_dir, "debug_log.txt")
 log_file = open(log_path, "w")
 
 def log_print(*args, **kwargs):
-    """Print to terminal and save to log file."""
     print(*args, **kwargs)
     print(*args, **kwargs, file=log_file)
 
@@ -223,8 +226,5 @@ def plot_accuracy_vs_threshold_all_kps(results_dict, radius, save_dir):
             log_print(f"Saved plot for keypoint {kp} to: {plot_save_path}")
 
 #plot_accuracy_vs_threshold_all_kps(all_results, r, base_dir)
-
-log_print(f"\n=== Debug log saved to {log_path} ===")
-log_file.close()
 
 

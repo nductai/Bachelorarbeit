@@ -1,9 +1,22 @@
 import wandb
 import json
+from pathlib import Path
 
 wandb.init(project="pose-estimation", name="json-plot")
 
-file_path = r"D:\TU\7_Semester\Bachelorarbeit\mmpose\work_dirs\td-hm_hrnet\20241126_094436\vis_data\20241126_094436.json"
+# ------------------PATH SETUP------------------
+THIS_FILE = Path(__file__).resolve()
+REPO_ROOT = THIS_FILE.parent.parent  # -> Bachelorarbeit
+
+file_path = (
+    REPO_ROOT
+    / "mmpose"
+    / "work_dirs"
+    / "td-hm_hrnet"
+    / "20250606_203408"
+    / "vis_data"
+    / "20250606_203408.json"
+)
 
 with open(file_path, "r") as file:
     lines = file.readlines()
@@ -25,5 +38,4 @@ for line in lines:
             "validation_PCK": record["PCK"],
             "validation_step": record["step"]
         })
-
 
