@@ -1,0 +1,16 @@
+{"time":"2025-10-04T21:00:33.3668604+02:00","level":"INFO","msg":"using version","core version":"0.18.7"}
+{"time":"2025-10-04T21:00:33.3668604+02:00","level":"INFO","msg":"created symlink","path":"D:\\TU\\7_Semester\\Bachelorarbeit\\code\\wandb\\run-20251004_210033-kfdnnbno\\logs\\debug-core.log"}
+{"time":"2025-10-04T21:00:33.990425+02:00","level":"INFO","msg":"created new stream","id":"kfdnnbno"}
+{"time":"2025-10-04T21:00:33.990425+02:00","level":"INFO","msg":"stream: started","id":"kfdnnbno"}
+{"time":"2025-10-04T21:00:33.990425+02:00","level":"INFO","msg":"writer: Do: started","stream_id":"kfdnnbno"}
+{"time":"2025-10-04T21:00:33.990425+02:00","level":"INFO","msg":"sender: started","stream_id":"kfdnnbno"}
+{"time":"2025-10-04T21:00:33.990425+02:00","level":"INFO","msg":"handler: started","stream_id":"kfdnnbno"}
+{"time":"2025-10-04T21:00:34.4226487+02:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-10-04T21:00:34.916048+02:00","level":"INFO","msg":"stream: closing","id":"kfdnnbno"}
+{"time":"2025-10-04T21:00:34.9178069+02:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-10-04T21:00:34.9178069+02:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-10-04T21:00:38.0147703+02:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-10-04T21:00:38.3303819+02:00","level":"INFO","msg":"handler: closed","stream_id":"kfdnnbno"}
+{"time":"2025-10-04T21:00:38.3303819+02:00","level":"INFO","msg":"writer: Close: closed","stream_id":"kfdnnbno"}
+{"time":"2025-10-04T21:00:38.3303819+02:00","level":"INFO","msg":"sender: closed","stream_id":"kfdnnbno"}
+{"time":"2025-10-04T21:00:38.3303819+02:00","level":"INFO","msg":"stream: closed","id":"kfdnnbno"}
