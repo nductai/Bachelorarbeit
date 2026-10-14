@@ -232,18 +232,18 @@ The predicted keypoints from the masked images are compared with their reference
 
 The continuous keypoint accuracy score is defined as:
 
-\[
-\operatorname{Accuracy}(e_{L2},r)=
+$$
+\operatorname{Accuracy}(e_{L2}, r) =
 \begin{cases}
-1-\dfrac{e_{L2}}{r}, & e_{L2}<r,\\[6pt]
-0, & e_{L2}\geq r \text{ or } e_{L2}\text{ is NaN}.
+1 - \dfrac{e_{L2}}{r}, & e_{L2} < r, \\[6pt]
+0, & e_{L2} \geq r \text{ or } e_{L2} \text{ is NaN}.
 \end{cases}
-\]
+$$
 
 where:
 
-- \(e_{L2}\) is the Euclidean distance between the predicted keypoint and its reference position.
-- \(r\) is the localization error threshold. In the occlusion analysis, \(r=20\) pixels.
+- $e_{L2}$ is the Euclidean distance between the predicted keypoint and its reference position.
+- $r$ is the localization error threshold. In the occlusion analysis, $r = 20$ pixels.
 
 The score decreases linearly as the localization error increases. For example, an error of 5 pixels gives a score of 0.75, while an error of 20 pixels or more gives a score of 0.
 
