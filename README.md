@@ -19,6 +19,16 @@ The pipeline covers:
 
 ---
 
+## Dataset and Large Files
+
+The `code/Pose-Estimation-ToF/` directory contains the original aligned RGB and depth images used in this project. Due to the large size of the dataset, these images are not included in this GitHub repository and must be obtained separately.
+
+The remaining data, including cropped images, keypoint annotations, training datasets, and occlusion-based experiment results, is generated during the implementation by running the corresponding scripts.
+
+The repository contains the source code and configuration files for the processing pipeline. Model checkpoints and the original dataset must be provided separately where necessary.
+
+---
+
 ## Repository Structure
 
 ```text
@@ -30,6 +40,7 @@ The pipeline covers:
 │   ├── remove_grid.py            # Random grid occlusion
 │   ├── calculate_accuracy.py     # Keypoint accuracy and saliency heatmaps
 │   └── Pose-Estimation-ToF/      # Processed data, annotations, and experiments
+│                                 # Not included in GitHub
 │
 └── mmpose/
     ├── prediction.py             # RGB-based keypoint pseudo-label generation
@@ -49,7 +60,7 @@ YOLOv8 is used to detect the person in each RGB image. The resulting bounding bo
 Run the script:
 
 ```bash
-python code/main.py
+python code/person_detection.py
 ```
 
 **Input:** Synchronized RGB and ToF depth images.
@@ -70,7 +81,7 @@ The predicted keypoints are transferred to the corresponding depth images and us
 Run the script:
 
 ```bash
-python mmpose/prediction.py
+python mmpose/prediction_rbg.py
 ```
 
 The script generates keypoint annotations in COCO/TinyCOCO-compatible JSON format.
