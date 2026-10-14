@@ -233,9 +233,9 @@ The predicted keypoints from the masked images are compared with their reference
 The continuous keypoint accuracy score is defined as:
 
 $$
-\operatorname{Accuracy}(e_{L2}, r) =
+\text{Accuracy}(e_{L2}, r) =
 \begin{cases}
-1 - \dfrac{e_{L2}}{r}, & e_{L2} < r, \\[6pt]
+1 - \dfrac{e_{L2}}{r}, & e_{L2} < r, \\
 0, & e_{L2} \geq r \text{ or } e_{L2} \text{ is NaN}.
 \end{cases}
 $$
